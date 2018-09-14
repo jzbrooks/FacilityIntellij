@@ -20,6 +20,8 @@
         <fileTypeFactory implementation="com.facilityapi.FsdFileTypeFactory"/>
         <internalFileTemplate name="Facility Service Definition File"/>
 
+        <!-- Parser -->
+        <lang.parserDefinition implementationClass="com.facilityapi.parser.FsdParser"/>
     </extensions>
 
     <actions>
