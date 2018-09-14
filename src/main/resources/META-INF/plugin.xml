@@ -18,7 +18,7 @@
 
         <!-- File-Type Factory -->
         <fileTypeFactory implementation="com.facilityapi.FsdFileTypeFactory"/>
-        <internalFileTemplate name="Rust File"/>
+        <internalFileTemplate name="Facility Service Definition File"/>
 
     </extensions>
 
