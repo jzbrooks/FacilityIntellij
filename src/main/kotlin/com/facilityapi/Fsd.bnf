@@ -10,15 +10,32 @@
     COMMA=','
     COLON=':'
 
-    DATA='data'
-    METHOD='method'
+    // type declarations
     SERVICE='service'
+    METHOD='method'
+    DATA='data'
+    ENUM='enum'
+
+    // Types
+    STRING='string'
+    INT32='int32'
+    INT64='int64'
+    DECIMAL='decimal'
+    DOUBLE='double'
+    BOOLEAN='boolean'
+    OBJECT='object'
+    MAP='map'
+    BYTES='bytes'
+    RESULT='result'
+    ERROR='error'
 
     space='regexp:\s+'
     comment='regexp:(///.*)|(#.*)'
     number='regexp:\d+(\.\d*)?'
     id='regexp:\p{Alpha}\w*'
-    string='"(\\.|[^"\\])*"'
+    string='regexp:"[^"]*"'
+    attribute='regexp:([a-zA-Z_][a-zA-Z_0-9]*)\\b\\]'
+    result_of_type='regexp:result<[a-zA-Z_0-9]*>'
   ]
 
   parserClass="com.facilityapi.parser.SimpleParser"
@@ -35,8 +52,17 @@
   tokenTypeClass="com.facilityapi.psi.FsdTokenType"
 }
 
-simpleFile ::= item_*
+file ::= top_level_element*
+top_level_element ::= (service_declaration|attribute_section|comment)
 
-private item_ ::= (property|COMMENT|CRLF)
+attribute_section ::= 'regexp:[\s*(?=([a-zA-Z_][a-zA-Z_0-9]*)\\b)' attribute 'regexp:\\]'
+attribute ::= 'regexp:([a-zA-Z_][a-zA-Z_0-9]*)\\b'
+attribute_parameters ::=
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY
+service_declaration ::= 'service' id 'regexp:\\s+' definition_body
+
+data_declaration ::=
+enum_delcaration ::=
+errors_declaration ::=
+method_declaration ::=
+member_declaration ::=
