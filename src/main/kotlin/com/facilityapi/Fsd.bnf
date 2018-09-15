@@ -1,4 +1,26 @@
 {
+  tokens = [
+    SEMI=';'
+    LBRACKET='['
+    RBRACKET=']'
+    LPAREN='('
+    RPAREN=')'
+    LCURLY='{'
+    RCURLY='}'
+    COMMA=','
+    COLON=':'
+
+    DATA='data'
+    METHOD='method'
+    SERVICE='service'
+
+    space='regexp:\s+'
+    comment='regexp:(///.*)|(#.*)'
+    number='regexp:\d+(\.\d*)?'
+    id='regexp:\p{Alpha}\w*'
+    string='"(\\.|[^"\\])*"'
+  ]
+
   parserClass="com.facilityapi.parser.SimpleParser"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
@@ -8,9 +30,9 @@
   psiPackage="com.facilityapi.psi"
   psiImplPackage="com.facilityapi.psi.impl"
 
-  elementTypeHolderClass="com.facilityapi.psi.SimpleTypes"
-  elementTypeClass="com.facilityapi.psi.SimpleElementType"
-  tokenTypeClass="com.facilityapi.psi.SimpleTokenType"
+  elementTypeHolderClass="com.facilityapi.psi.FsdTypes"
+  elementTypeClass="com.facilityapi.psi.FsdElementType"
+  tokenTypeClass="com.facilityapi.psi.FsdTokenType"
 }
 
 simpleFile ::= item_*
