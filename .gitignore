@@ -40,3 +40,7 @@ gradle-app.setting
 
 # IDE files
 /.idea/workspace.xml
+/.idea/gradle.xml
+
+# Generated Files
+/src/main/gen/
