@@ -23,9 +23,9 @@
     RESULT='result'
 
     space='regexp:\s+'
+    name='regexp:\w+'
     comment='regexp:(///.*)'
     number='regexp:\d+(\.\d*)?'
-    name='regexp:\w+'
     string='regexp:"[^"]*"'
     namespace='regexp:\w[.\w]*'
   ]
@@ -59,22 +59,27 @@ attribute_parameters ::= attribute_parameters_begin parameter (',' parameter)* a
 private attribute_parameters_begin ::= lparen
 private attribute_parameters_end ::= rparen
 
+method_declaration ::= attribute_section* method name method_definition
+private method_definition ::= method_parameters colon method_return_values
+private method_parameters ::= block_begin property* block_end {pin=1 recoverWhile=block_end}
+private method_return_values ::= block_begin property* block_end {pin=1 recoverWhile=block_end}
+
 service_declaration ::= attribute_section* service name service_definition
 service_definition ::= block_begin (comment | method_declaration | enum_declaration | data_declaration | errors_declaration)*  {pin=1 recoverWhile=block_end}
 
-method_declaration ::= attribute_section* method name method_definition
-private method_definition ::= block_begin 'regexp:\.+' RBRACKET colon LBRACKET 'regexp:\.+' RBRACKET {pin=1 recoverWhile=block_end}
-
-data_declaration ::= (attribute_section)* data name data_definition
+data_declaration ::= attribute_section* data name data_definition
 data_definition ::= (comment | property)*
 
-enum_declaration ::= (attribute_section)* enum name enum_definition
-enum_definition ::= comment* name (comma name)*
+enum_declaration ::= attribute_section* enum name enum_definition
+enum_definition ::= comment* name (comma comment name)*
 
-errors_declaration ::= (attribute_section)* ERRORS name errors_definition
-errors_definition ::=
+errors_declaration ::= attribute_section* ERRORS name errors_definition
+errors_definition ::= comment* name (comma comment? name)*
 
-property ::= name colon built_in_type semi
+property ::= name colon built_in_type property_terminal {pin=1 recoverWhile=property_terminal}
+private property_terminal ::= semi
+
 built_in_type ::= STRING|INT32|INT64|DECIMAL|DOUBLE|BOOLEAN|OBJECT|MAP|BYTES|RESULT|ERRORS
+
 private block_begin ::= LCURLY
 private block_end ::= RCURLY
