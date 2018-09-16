@@ -11,16 +11,22 @@
     COLON=':'
 
     // types
-    STRING='string'
-    INT32='int32'
-    INT64='int64'
-    DECIMAL='decimal'
-    DOUBLE='double'
-    BOOLEAN='boolean'
-    OBJECT='object'
-    MAP='map'
-    BYTES='bytes'
-    RESULT='result'
+    TYPE_STRING='string'
+    TYPE_INT32='int32'
+    TYPE_INT64='int64'
+    TYPE_DECIMAL='decimal'
+    TYPE_DOUBLE='double'
+    TYPE_BOOLEAN='boolean'
+    TYPE_OBJECT='object'
+    TYPE_MAP='map'
+    TYPE_BYTES='bytes'
+    TYPE_RESULT='result'
+
+    KEYWORD_SERVICE='service'
+    KEYWORD_METHOD='method'
+    KEYWORD_DATA='data'
+    KEYWORD_ENUM='enum'
+    KEYWORD_ERRORS='errors'
 
     space='regexp:\s+'
     name='regexp:\w+'
@@ -30,11 +36,11 @@
     namespace='regexp:\w[.\w]*'
   ]
 
-  parserClass="com.facilityapi.parser.SimpleParser"
+  parserClass="com.facilityapi.parser.FsdParser"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
-  psiClassPrefix="Simple"
+  psiClassPrefix="Fsd"
   psiImplClassSuffix="Impl"
   psiPackage="com.facilityapi.psi"
   psiImplPackage="com.facilityapi.psi.impl"
@@ -44,42 +50,43 @@
   tokenTypeClass="com.facilityapi.psi.FsdTokenType"
 }
 
-file ::= top_level_element+
-top_level_element ::= service_declaration | comment
-
-parameter ::= name colon parameter_value
-parameter_value ::= string | number | namespace
+file ::= top_level_element*
+top_level_element ::= comment | service_declaration | attribute_section
 
 attribute_section ::= attribute_begin attribute attribute_end {pin=1 recoverWhile=attribute_end}
 attribute ::= name attribute_parameters?
 private attribute_begin ::= lbracket
 private attribute_end ::= rbracket
 
-attribute_parameters ::= attribute_parameters_begin parameter (',' parameter)* attribute_parameters_end {pin=1 recoverWhile=attribute_parameters_end}
+attribute_parameters ::= attribute_parameters_begin parameter_list attribute_parameters_end {pin=1 recoverWhile=attribute_parameters_end}
 private attribute_parameters_begin ::= lparen
 private attribute_parameters_end ::= rparen
 
-method_declaration ::= attribute_section* method name method_definition
+private parameter_list ::= parameter (',' parameter)*
+private parameter ::= name colon parameter_value
+private parameter_value ::= string | number | namespace
+
+method_declaration ::= KEYWORD_METHOD name method_definition
 private method_definition ::= method_parameters colon method_return_values
 private method_parameters ::= block_begin property* block_end {pin=1 recoverWhile=block_end}
 private method_return_values ::= block_begin property* block_end {pin=1 recoverWhile=block_end}
 
-service_declaration ::= attribute_section* service name service_definition
-service_definition ::= block_begin (comment | method_declaration | enum_declaration | data_declaration | errors_declaration)*  {pin=1 recoverWhile=block_end}
+service_declaration ::= KEYWORD_SERVICE name service_definition
+private service_definition ::= block_begin {comment | attribute_section | method_declaration | enum_declaration | data_declaration | errors_declaration} *  block_end {pin=1 recoverWhile=block_end}
 
-data_declaration ::= attribute_section* data name data_definition
+data_declaration ::= KEYWORD_DATA name data_definition
 data_definition ::= (comment | property)*
 
-enum_declaration ::= attribute_section* enum name enum_definition
+enum_declaration ::= KEYWORD_ENUM name enum_definition
 enum_definition ::= comment* name (comma comment name)*
 
-errors_declaration ::= attribute_section* ERRORS name errors_definition
+errors_declaration ::= KEYWORD_ERRORS ERRORS name errors_definition
 errors_definition ::= comment* name (comma comment? name)*
 
 property ::= name colon built_in_type property_terminal {pin=1 recoverWhile=property_terminal}
 private property_terminal ::= semi
 
-built_in_type ::= STRING|INT32|INT64|DECIMAL|DOUBLE|BOOLEAN|OBJECT|MAP|BYTES|RESULT|ERRORS
+built_in_type ::= TYPE_STRING|TYPE_INT32|TYPE_INT64|TYPE_DECIMAL|TYPE_DOUBLE|TYPE_BOOLEAN|TYPE_OBJECT|TYPE_MAP|TYPE_BYTES|TYPE_RESULT
 
 private block_begin ::= LCURLY
 private block_end ::= RCURLY
