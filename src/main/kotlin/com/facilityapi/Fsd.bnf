@@ -10,13 +10,7 @@
     COMMA=','
     COLON=':'
 
-    // type declarations
-    SERVICE='service'
-    METHOD='method'
-    DATA='data'
-    ENUM='enum'
-
-    // Types
+    // types
     STRING='string'
     INT32='int32'
     INT64='int64'
@@ -27,15 +21,13 @@
     MAP='map'
     BYTES='bytes'
     RESULT='result'
-    ERROR='error'
 
     space='regexp:\s+'
-    comment='regexp:(///.*)|(#.*)'
+    comment='regexp:(///.*)'
     number='regexp:\d+(\.\d*)?'
-    id='regexp:\p{Alpha}\w*'
+    name='regexp:\w+'
     string='regexp:"[^"]*"'
-    attribute='regexp:([a-zA-Z_][a-zA-Z_0-9]*)\\b\\]'
-    result_of_type='regexp:result<[a-zA-Z_0-9]*>'
+    namespace='regexp:\w[.\w]*'
   ]
 
   parserClass="com.facilityapi.parser.SimpleParser"
@@ -52,17 +44,37 @@
   tokenTypeClass="com.facilityapi.psi.FsdTokenType"
 }
 
-file ::= top_level_element*
-top_level_element ::= (service_declaration|attribute_section|comment)
+file ::= top_level_element+
+top_level_element ::= service_declaration | comment
 
-attribute_section ::= 'regexp:[\s*(?=([a-zA-Z_][a-zA-Z_0-9]*)\\b)' attribute 'regexp:\\]'
-attribute ::= 'regexp:([a-zA-Z_][a-zA-Z_0-9]*)\\b'
-attribute_parameters ::=
+parameter ::= name colon parameter_value
+parameter_value ::= string | number | namespace
 
-service_declaration ::= 'service' id 'regexp:\\s+' definition_body
+attribute_section ::= attribute_begin attribute attribute_end {pin=1 recoverWhile=attribute_end}
+attribute ::= name attribute_parameters?
+private attribute_begin ::= lbracket
+private attribute_end ::= rbracket
 
-data_declaration ::=
-enum_delcaration ::=
-errors_declaration ::=
-method_declaration ::=
-member_declaration ::=
+attribute_parameters ::= attribute_parameters_begin parameter (',' parameter)* attribute_parameters_end {pin=1 recoverWhile=attribute_parameters_end}
+private attribute_parameters_begin ::= lparen
+private attribute_parameters_end ::= rparen
+
+service_declaration ::= attribute_section* service name service_definition
+service_definition ::= block_begin (comment | method_declaration | enum_declaration | data_declaration | errors_declaration)*  {pin=1 recoverWhile=block_end}
+
+method_declaration ::= attribute_section* method name method_definition
+private method_definition ::= block_begin 'regexp:\.+' RBRACKET colon LBRACKET 'regexp:\.+' RBRACKET {pin=1 recoverWhile=block_end}
+
+data_declaration ::= (attribute_section)* data name data_definition
+data_definition ::= (comment | property)*
+
+enum_declaration ::= (attribute_section)* enum name enum_definition
+enum_definition ::= comment* name (comma name)*
+
+errors_declaration ::= (attribute_section)* ERRORS name errors_definition
+errors_definition ::=
+
+property ::= name colon built_in_type semi
+built_in_type ::= STRING|INT32|INT64|DECIMAL|DOUBLE|BOOLEAN|OBJECT|MAP|BYTES|RESULT|ERRORS
+private block_begin ::= LCURLY
+private block_end ::= RCURLY
