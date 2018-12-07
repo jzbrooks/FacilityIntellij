@@ -18,7 +18,15 @@
         <internalFileTemplate name="Facility Service Definition File"/>
 
         <!-- Parser -->
-        <lang.parserDefinition implementationClass="com.facilityapi.parser.FsdParserDefinition"/>
+        <lang.parserDefinition
+                language="FSD"
+                implementationClass="com.facilityapi.parser.FsdParserDefinition"/>
+
+        <!-- Syntax Highlighter -->
+        <lang.syntaxHighlighterFactory
+                language="FSD"
+                implementationClass="com.facilityapi.FsdSyntaxHighlighterFactory" />
+        <colorSettingsPage implementation="com.facilityapi.FsdColorSettingsPage"/>
     </extensions>
 
     <actions>
