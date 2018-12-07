@@ -18,7 +18,7 @@
         <internalFileTemplate name="Facility Service Definition File"/>
 
         <!-- Parser -->
-        <lang.parserDefinition implementationClass="com.facilityapi.parser.FsdParser"/>
+        <lang.parserDefinition implementationClass="com.facilityapi.parser.FsdParserDefinition"/>
     </extensions>
 
     <actions>
