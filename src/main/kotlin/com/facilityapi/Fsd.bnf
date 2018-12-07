@@ -1,4 +1,17 @@
 {
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  parserClass="com.facilityapi.parser.FsdParser"
+
+  psiClassPrefix="Fsd"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.facilityapi.psi"
+  psiImplPackage="com.facilityapi.psi.impl"
+
+  elementTypeHolderClass="com.facilityapi.psi.FsdTypes"
+  elementTypeClass="com.facilityapi.psi.FsdElementType"
+  tokenTypeClass="com.facilityapi.psi.FsdTokenType"
+
   tokens = [
     SEMI=';'
     LBRACKET='['
@@ -49,13 +62,13 @@ data_definition ::= (comment | property)*
 enum_declaration ::= enum name enum_definition
 enum_definition ::= comment* name (comma comment name)*
 
-errors_declaration ::= KEYWORD_ERRORS ERRORS name errors_definition
+errors_declaration ::= errors name errors_definition
 errors_definition ::= comment* name (comma comment? name)*
 
 property ::= name colon built_in_type property_terminal {pin=1 recoverWhile=property_terminal}
 private property_terminal ::= semi
 
-built_in_type ::= TYPE_STRING|TYPE_INT32|TYPE_INT64|TYPE_DECIMAL|TYPE_DOUBLE|TYPE_BOOLEAN|TYPE_OBJECT|TYPE_MAP|TYPE_BYTES|TYPE_RESULT
+built_in_type ::= string|int32|int64|decimal|double|boolean|object|map|bytes|result
 
 private block_begin ::= LCURLY
 private block_end ::= RCURLY
